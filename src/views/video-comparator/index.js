@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Card, Col, Row, Upload, Button} from 'antd';
+import React, {useState, useEffect} from 'react';
+import {Card, Col, Row, Upload, Button, PageHeader} from 'antd';
 import {UploadOutlined} from '@ant-design/icons';
 import Sketch from 'react-p5';
 import ml5 from 'ml5';
@@ -9,7 +9,7 @@ import client from 'client';
 let cameraPose;
 let videoPlayerPose;
 
-const VideoPlayer = () => {
+const VideoPlayer = ({videoFile}) => {
   let video;
   let poseNet;
   let pose;
@@ -17,7 +17,7 @@ const VideoPlayer = () => {
 
   const setup = (p5, canvasParentRef) => {
     video = p5
-      .createVideo(['videos/squats.mp4'], () => {
+      .createVideo([videoFile], () => {
         video.loop();
         video.volume(0);
         video.showControls();
@@ -109,32 +109,35 @@ const Camera = () => {
 const VideoComparator = () => {
   const [video, setVideo] = useState(undefined);
 
-  (async () => {
-    try {
-      const res = await client.post('/files/download', {
-        url: 'https://www.youtube.com/watch?v=qObzgUfCl28',
-      });
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await client.post(
+          '/files/download',
+          {
+            url: 'https://www.youtube.com/watch?v=qObzgUfCl28',
+          },
+          {responseType: 'blob'},
+        );
 
-      const blob = new Blob([res.data], {type: 'video/mp4'});
-      const url = URL.createObjectURL(blob);
-    } catch (err) {
-      return err;
-    }
-  })();
+        const url = URL.createObjectURL(res.data);
+        setVideo(url);
+      } catch (err) {
+        return err;
+      }
+    })();
+  }, []);
 
   return (
-    <Row>
-      <Col span={12}>{video && <VideoPlayer videoFile={video} />}</Col>
-      <Col span={12}>
-        {video ? (
-          <Camera />
-        ) : (
-          <Upload onChange={({file}) => ({})}>
-            <Button icon={<UploadOutlined />}>Upload video</Button>
-          </Upload>
-        )}
-      </Col>
-    </Row>
+    <>
+      <Row>
+        <PageHeader title="Perfect Training" subTitle="High-end training" />
+      </Row>
+      <Row>
+        <Col span={12}>{video && <VideoPlayer videoFile={video} />}</Col>
+        <Col span={12}>{video && <Camera />}</Col>
+      </Row>
+    </>
   );
 };
 
