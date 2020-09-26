@@ -1,20 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import client from 'client';
-// import Dashboard from './views/Dashboard';
+import React from 'react';
+import {Switch, Route, Redirect} from 'react-router-dom';
+import VideoComparator from './views/video-comparator';
 
 const App = () => {
-  const [message, setMessage] = useState(undefined);
-
-  useEffect(() => {
-    (async () => {
-      const {data, error} = await client.get('/');
-
-      if (error) setMessage(error.toString());
-      else setMessage(data);
-    })();
-  }, []);
-
-  return <div>{message}</div>;
+  return (
+    <Switch>
+      <Route exact path="/" component={VideoComparator} />
+      <Redirect to="/" />
+    </Switch>
+  );
 };
 
 export default App;
