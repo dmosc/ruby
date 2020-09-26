@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import client from 'client';
+// import Dashboard from './views/Dashboard';
 
 const App = () => {
   const [message, setMessage] = useState(undefined);
