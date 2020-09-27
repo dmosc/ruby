@@ -1,9 +1,8 @@
 import {Router} from 'express';
+import files from './files';
 
 const routes = Router();
 
-routes.get('/', (_, res) => {
-  res.status(200).send('Server is alive!');
-});
+routes.use('/files', files);
 
 export default routes;
