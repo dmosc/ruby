@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Button, Card, Col, Row, Skeleton} from 'antd';
+import {Button, Card, Col, Row, Skeleton, Tag} from 'antd';
 import {RollbackOutlined} from '@ant-design/icons';
 import {Link, useLocation} from 'react-router-dom';
 import Sketch from 'react-p5';
@@ -9,12 +9,12 @@ import {api} from 'client';
 
 let cameraPose;
 let videoPlayerPose;
+let cosineSimilarity = 0;
 
 const VideoPlayer = ({videoFile}) => {
   let video;
   let poseNet;
   let pose;
-  let skeleton;
 
   const setup = (p5, canvasParentRef) => {
     video = p5
@@ -33,7 +33,6 @@ const VideoPlayer = ({videoFile}) => {
   const gotPoses = (poses) => {
     if (poses.length > 0) {
       pose = poses[0].pose;
-      skeleton = poses[0].skeleton;
     }
   };
 
@@ -42,9 +41,13 @@ const VideoPlayer = ({videoFile}) => {
       videoPlayerPose = pose;
 
       if (videoPlayerPose && cameraPose) {
-        const cosineSimilarity = poseSimilarity(videoPlayerPose, cameraPose, {
+        cosineSimilarity = poseSimilarity(videoPlayerPose, cameraPose, {
           strategy: 'cosineSimilarity',
         });
+        const cosineSimilarityTag = document.getElementById('similarity');
+        cosineSimilarityTag.innerText = `${(cosineSimilarity * 100).toFixed(
+          2,
+        )}% similarity`;
       }
     }
   };
@@ -82,7 +85,15 @@ const Camera = () => {
       for (let i = 0; i < pose.keypoints.length; i++) {
         const x = pose.keypoints[i].position.x;
         const y = pose.keypoints[i].position.y;
-        p5.fill(0, 255, 0);
+
+        if (cosineSimilarity >= 0.9) {
+          p5.fill(0, 255, 0);
+        } else if (cosineSimilarity >= 0.7) {
+          p5.fill(255, 255, 0);
+        } else {
+          p5.fill(255, 0, 0);
+        }
+
         p5.ellipse(x, y, 16, 16);
       }
 
@@ -128,16 +139,25 @@ const VideoComparator = () => {
         return err;
       }
     })();
-  }, []);
+  }, [location]);
 
   return (
     <>
-      <Row style={{marginBottom: 10}}>
+      <Row
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: 10,
+        }}
+      >
         <Link to={{pathname: '/', state: {}}}>
           <Button type="primary" icon={<RollbackOutlined />}>
             Return
           </Button>
         </Link>
+        <Tag id="similarity" color="purple">
+          Waiting for video streams...
+        </Tag>
       </Row>
       <Row gutter={15}>
         <Col span={12}>
