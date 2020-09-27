@@ -1,48 +1,88 @@
-import React from 'react';
-import {Row, Col} from 'antd';
-import {useHistory} from 'react-router-dom';
-import {Container, Box} from './elements';
+import React, {useEffect, useState} from 'react';
+import {Typography} from 'antd';
+import trainings from 'data/trainings';
+import {youtube} from 'client';
+import CardList from './card-list';
+import {Container} from './elements';
+
+const {Title} = Typography;
 
 const Dashboard = () => {
-  const history = useHistory();
+  const [upperBody, setUpperBody] = useState([]);
+  const [lowerBody, setLowerBody] = useState([]);
+  const [core, setCore] = useState([]);
+  const [cardio, setCardio] = useState([]);
+  const [flexibility, setFlexibility] = useState([]);
 
-  const pushView = (info) => {
-    history.push({
-      pathname: '/cam',
-      props: {
-        info,
-      },
-    });
+  const get = async (videoList) => {
+    const {
+      data: {items},
+    } = await youtube.get(
+      `/videos?part=id%2C+snippet&id=${videoList.toString()}`,
+    );
+
+    return items || [];
   };
 
+  useEffect(() => {
+    const getVideos = async () => {
+      const [
+        upperBodyToSet,
+        lowerBodyToSet,
+        coreToSet,
+        cardioToSet,
+        flexibilityToSet,
+      ] = await Promise.all([
+        get(trainings.upperBody),
+        get(trainings.lowerBody),
+        get(trainings.core),
+        get(trainings.cardio),
+        get(trainings.flexibility),
+      ]);
+
+      setUpperBody(upperBodyToSet);
+      setLowerBody(lowerBodyToSet);
+      setCore(coreToSet);
+      setCardio(cardioToSet);
+      setFlexibility(flexibilityToSet);
+    };
+
+    getVideos();
+  }, []);
+
   return (
-    <Container>
-      <Row>
-        <Col span={24}></Col>
-      </Row>
-      <Row gutter={[48, 48]}>
-        <Col span={8}>
-          <Box onClick={() => pushView('1')}>Item</Box>
-        </Col>
-        <Col span={8}>
-          <Box onClick={() => pushView('2')}>Item</Box>
-        </Col>
-        <Col span={8}>
-          <Box onClick={() => pushView('3')}>Item</Box>
-        </Col>
-      </Row>
-      <Row gutter={[48, 48]}>
-        <Col span={8}>
-          <Box onClick={() => pushView('4')}>Item</Box>
-        </Col>
-        <Col span={8}>
-          <Box onClick={() => pushView('5')}>Item</Box>
-        </Col>
-        <Col span={8}>
-          <Box onClick={() => pushView('6')}>Item</Box>
-        </Col>
-      </Row>
-    </Container>
+    <>
+      <Title style={{marginTop: 10}} level={4}>
+        Upper body
+      </Title>
+      <Container>
+        <CardList category={upperBody} />
+      </Container>
+      <Title style={{marginTop: 10}} level={4}>
+        Lower body
+      </Title>
+      <Container>
+        <CardList category={lowerBody} />
+      </Container>
+      <Title style={{marginTop: 10}} level={4}>
+        Core
+      </Title>
+      <Container>
+        <CardList category={core} />
+      </Container>
+      <Title style={{marginTop: 10}} level={4}>
+        Cardio
+      </Title>
+      <Container>
+        <CardList category={cardio} />
+      </Container>
+      <Title style={{marginTop: 10}} level={4}>
+        Flexibility
+      </Title>
+      <Container>
+        <CardList category={flexibility} />
+      </Container>
+    </>
   );
 };
 

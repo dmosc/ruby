@@ -4,7 +4,7 @@ import {UploadOutlined} from '@ant-design/icons';
 import Sketch from 'react-p5';
 import ml5 from 'ml5';
 import {poseSimilarity} from 'posenet-similarity';
-import client from 'client';
+import {api} from 'client';
 
 let cameraPose;
 let videoPlayerPose;
@@ -112,7 +112,7 @@ const VideoComparator = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await client.post(
+        const res = await api.post(
           '/files/download',
           {
             url: 'https://www.youtube.com/watch?v=afghBre8NlI',
