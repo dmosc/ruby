@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Button, Card, Col, Row, Skeleton, Tag} from 'antd';
+import {Statistic, Button, Card, Col, Row, Skeleton, Tag, Spin} from 'antd';
 import {RollbackOutlined} from '@ant-design/icons';
 import {Link, useLocation} from 'react-router-dom';
 import Sketch from 'react-p5';
@@ -45,9 +45,13 @@ const VideoPlayer = ({videoFile}) => {
           strategy: 'cosineSimilarity',
         });
         const cosineSimilarityTag = document.getElementById('similarity');
+        const theOtherSimilarityTag = document.querySelector(
+          '#root > section > section > div > div.ant-spin-nested-loading > div > div > div:nth-child(2) > div > div > div.ant-statistic > div.ant-statistic-content > span.ant-statistic-content-value > span',
+        );
         cosineSimilarityTag.innerText = `${(cosineSimilarity * 100).toFixed(
           2,
         )}% similarity`;
+        theOtherSimilarityTag.innerText = (cosineSimilarity * 100).toFixed(2);
       }
     }
   };
@@ -107,7 +111,7 @@ const Camera = () => {
     }
   };
 
-  return <Sketch setup={setup} draw={draw} />;
+  return <Sketch style={{width: '100%'}} setup={setup} draw={draw} />;
 };
 
 const Loading = ({title}) => (
@@ -159,26 +163,40 @@ const VideoComparator = () => {
           Waiting for video streams...
         </Tag>
       </Row>
-      <Row gutter={15}>
-        <Col span={12}>
-          <Card>
-            {video ? (
-              <VideoPlayer videoFile={video} />
-            ) : (
-              <Loading title="Downloading video..." />
-            )}
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card>
-            {video ? (
-              <Camera />
-            ) : (
-              <Loading title="Rendering visual analysis..." />
-            )}
-          </Card>
-        </Col>
-      </Row>
+      <Spin spinning={!video} tip="Loading...">
+        <Row gutter={15}>
+          <Col span={12}>
+            <Card>
+              {video ? (
+                <VideoPlayer videoFile={video} />
+              ) : (
+                <Loading title="Downloading video..." />
+              )}
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card>
+              {video ? (
+                <>
+                  <Camera />
+                  <Statistic
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexDirection: 'column',
+                    }}
+                    title="Similarity"
+                    value="100"
+                    prefix="%"
+                  />
+                </>
+              ) : (
+                <Loading title="Rendering visual analysis..." />
+              )}
+            </Card>
+          </Col>
+        </Row>
+      </Spin>
     </>
   );
 };
