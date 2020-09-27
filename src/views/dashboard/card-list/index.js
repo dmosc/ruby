@@ -21,7 +21,10 @@ const CardList = ({category, loading}) => {
             </Card>
           ))
         : category.map(({id, snippet}) => (
-            <Link key={Math.random() * Date.now()} to="/cam">
+            <Link
+              key={Math.random() * Date.now()}
+              to={{pathname: '/cam', state: {videoId: id}}}
+            >
               <Card
                 style={{cursor: 'pointer'}}
                 cover={

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {Card, Col, Row, Upload, Button, PageHeader} from 'antd';
-import {UploadOutlined} from '@ant-design/icons';
+import {Button, Card, Col, Row, Skeleton} from 'antd';
+import {RollbackOutlined} from '@ant-design/icons';
+import {Link, useLocation} from 'react-router-dom';
 import Sketch from 'react-p5';
 import ml5 from 'ml5';
 import {poseSimilarity} from 'posenet-similarity';
@@ -48,11 +49,7 @@ const VideoPlayer = ({videoFile}) => {
     }
   };
 
-  return (
-    <Card>
-      <Sketch setup={setup} draw={draw} />
-    </Card>
-  );
+  return <Sketch setup={setup} draw={draw} />;
 };
 
 const Camera = () => {
@@ -99,15 +96,20 @@ const Camera = () => {
     }
   };
 
-  return (
-    <Card>
-      <Sketch setup={setup} draw={draw} />
-    </Card>
-  );
+  return <Sketch setup={setup} draw={draw} />;
 };
+
+const Loading = ({title}) => (
+  <Card key={Math.random()} title={title}>
+    <Skeleton.Image loading />
+    <Skeleton loading key={Math.random()} />
+  </Card>
+);
 
 const VideoComparator = () => {
   const [video, setVideo] = useState(undefined);
+
+  const location = useLocation();
 
   useEffect(() => {
     (async () => {
@@ -115,7 +117,7 @@ const VideoComparator = () => {
         const res = await api.post(
           '/files/download',
           {
-            url: 'https://www.youtube.com/watch?v=afghBre8NlI',
+            url: `https://www.youtube.com/watch?v=${location.state?.videoId}`,
           },
           {responseType: 'blob'},
         );
@@ -130,12 +132,32 @@ const VideoComparator = () => {
 
   return (
     <>
-      <Row>
-        <PageHeader title="Perfect Training" subTitle="High-end training" />
+      <Row style={{marginBottom: 10}}>
+        <Link to={{pathname: '/', state: {}}}>
+          <Button type="primary" icon={<RollbackOutlined />}>
+            Return
+          </Button>
+        </Link>
       </Row>
-      <Row>
-        <Col span={12}>{video && <VideoPlayer videoFile={video} />}</Col>
-        <Col span={12}>{video && <Camera />}</Col>
+      <Row gutter={15}>
+        <Col span={12}>
+          <Card>
+            {video ? (
+              <VideoPlayer videoFile={video} />
+            ) : (
+              <Loading title="Downloading video..." />
+            )}
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card>
+            {video ? (
+              <Camera />
+            ) : (
+              <Loading title="Rendering visual analysis..." />
+            )}
+          </Card>
+        </Col>
       </Row>
     </>
   );
