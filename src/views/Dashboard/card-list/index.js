@@ -13,7 +13,7 @@ const trim = (text) =>
 const CardList = ({category, loading}) => {
   return (
     <>
-      {category.length === 0
+      {loading
         ? new Array(8).fill().map(() => (
             <Card key={Math.random()}>
               <Skeleton.Image loading />
