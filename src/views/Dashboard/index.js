@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [core, setCore] = useState([]);
   const [cardio, setCardio] = useState([]);
   const [flexibility, setFlexibility] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const get = async (videoList) => {
     const {
@@ -45,6 +46,7 @@ const Dashboard = () => {
       setCore(coreToSet);
       setCardio(cardioToSet);
       setFlexibility(flexibilityToSet);
+      setLoading(false);
     };
 
     getVideos();
@@ -56,31 +58,31 @@ const Dashboard = () => {
         Upper body
       </Title>
       <Container>
-        <CardList category={upperBody} />
+        <CardList loading={loading} category={upperBody} />
       </Container>
       <Title style={{marginTop: 10}} level={4}>
         Lower body
       </Title>
       <Container>
-        <CardList category={lowerBody} />
+        <CardList loading={loading} category={lowerBody} />
       </Container>
       <Title style={{marginTop: 10}} level={4}>
         Core
       </Title>
       <Container>
-        <CardList category={core} />
+        <CardList loading={loading} category={core} />
       </Container>
       <Title style={{marginTop: 10}} level={4}>
         Cardio
       </Title>
       <Container>
-        <CardList category={cardio} />
+        <CardList loading={loading} category={cardio} />
       </Container>
       <Title style={{marginTop: 10}} level={4}>
         Flexibility
       </Title>
       <Container>
-        <CardList category={flexibility} />
+        <CardList loading={loading} category={flexibility} />
       </Container>
     </>
   );

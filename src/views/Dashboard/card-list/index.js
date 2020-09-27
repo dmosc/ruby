@@ -1,23 +1,49 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import CardCategory from './card-category';
+import {Link} from 'react-router-dom';
+import {Card} from 'antd';
+import {RightOutlined} from '@ant-design/icons';
+import {Skeleton} from 'antd';
 
-const CardList = ({category}) => {
+const {Meta} = Card;
+
+const trim = (text) =>
+  text.length > 100 ? `${text.substring(0, 100)}...` : text;
+
+const CardList = ({category, loading}) => {
   return (
     <>
-      {category.map(({id, snippet}) => (
-        <CardCategory
-          key={id}
-          thumbnail={snippet.thumbnails.standard.url}
-          title={snippet.title}
-          description={snippet.description}
-        />
-      ))}
+      {category.length === 0
+        ? new Array(8).fill().map(() => (
+            <Card key={Math.random()}>
+              <Skeleton.Image loading />
+              <Skeleton loading key={Math.random()} />
+            </Card>
+          ))
+        : category.map(({id, snippet}) => (
+            <Link key={Math.random() * Date.now()} to="/cam">
+              <Card
+                style={{cursor: 'pointer'}}
+                cover={
+                  <img alt="example" src={snippet.thumbnails.standard.url} />
+                }
+                actions={[<RightOutlined key="setting" />]}
+              >
+                <Meta
+                  title={snippet.title}
+                  description={trim(snippet.description)}
+                />
+              </Card>
+            </Link>
+          ))}
     </>
   );
 };
 
+CardList.defaultProps = [];
+
 CardList.propTypes = {
+  loading: PropTypes.bool.isRequired,
   category: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -31,7 +57,7 @@ CardList.propTypes = {
         description: PropTypes.string.isRequired,
       }),
     }),
-  ).isRequired,
+  ),
 };
 
 export default CardList;
