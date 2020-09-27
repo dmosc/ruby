@@ -5,6 +5,8 @@ steps:
         'build',
         '--build-arg',
         'REACT_APP_BACKEND_ENDPOINT=https://backend-5snxalmwva-uc.a.run.app',
+        '--build-arg',
+        'REACT_APP_YOUTUBE_API_KEY=AIzaSyBbWbj_GWflyhV1T2XVPZPwWya2AIOBo8Y',
         '-t',
         'gcr.io/$PROJECT_ID/default-frontend',
         '-f',
