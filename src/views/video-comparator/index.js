@@ -115,7 +115,7 @@ const VideoComparator = () => {
         const res = await client.post(
           '/files/download',
           {
-            url: 'https://www.youtube.com/watch?v=qObzgUfCl28',
+            url: 'https://www.youtube.com/watch?v=afghBre8NlI',
           },
           {responseType: 'blob'},
         );
