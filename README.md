@@ -17,7 +17,7 @@ We invite you to check out our demonstration video to have a deep dive into what
 [Link to presentation](https://docs.google.com/presentation/d/14d2Pz5hhM-piGCHXnJwS7jK4ihIfHvM-Cmq6XfenMaE/edit?usp=sharing)
 
 
-(Try it out)[frontend-5snxalmwva-uc.a.run.app]
+[Try it out](frontend-5snxalmwva-uc.a.run.app)
 
 **Note for trying it out**
 
